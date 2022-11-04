@@ -6,7 +6,9 @@ import { useQuery } from "@tanstack/react-query";
 import { TagsInput } from "react-tag-input-component";
 
 async function fetchText(kw) {
-  console.log(kw)
+  kw = {keywords: kw}
+  let x = JSON.stringify(kw)
+  console.log(x)
   return await fetch(`http://localhost:8080/`, {
     method: 'POST',
     mode: 'cors',
@@ -17,7 +19,7 @@ async function fetchText(kw) {
     },
     redirect: 'follow',
     referrerPolicy: 'no-referrer',
-    body: JSON.stringify(kw)
+    body: x
   }).then((response) =>
     response.json()
   );

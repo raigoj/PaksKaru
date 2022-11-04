@@ -1,5 +1,17 @@
 import logo from './logo.svg';
 import './App.css';
+import React from 'react'
+import Select from 'react-select'
+
+const options = [
+  { value: 'chocolate', label: 'Headline' },
+  { value: 'strawberry', label: 'Tweet' },
+  { value: 'vanilla', label: 'Vanilla' }
+]
+
+const MyComponent = () => (
+  <Select options={options} />
+)
 
 function App() {
   return (
@@ -18,6 +30,9 @@ function App() {
           Learn React
         </a>
       </header>
+      <div className='container'>
+        <MyComponent />
+      </div>
     </div>
   );
 }

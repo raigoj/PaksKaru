@@ -17,7 +17,6 @@ func main() {
 }
 
 func mainHandler(w http.ResponseWriter, r *http.Request) {
-  fmt.Fprintf(w, "hello junction %s", r.URL.Path[1:])
   c := gogpt.NewClient("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")
   ctx := context.Background()
   var v map[string][]string
@@ -25,19 +24,27 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
   err := json.NewDecoder(r.Body).Decode(&v)
 
   if err != nil {
-    fmt.Println("ERROR", err)
-    w.WriteHeader(http.StatusInternalServerError)
     return
   }
+  var prompt = `Topic: Britain, coronavirus, beaches
+  Headline: Videos show crowded beaches in Britain
+
+  Topic: Apple, Big Sur, software
+  Headline: Apple promises faster software update installation with macOS Big Sur
+
+  Topic: Artic, climate change, satellite
+  Headline: A Satellite Lets Scientists See Antarctica’s Melting Like Never Before
+
+  Topic: {example}
+  Headline:`
 
   var keywords  = v["keywords"]
   fmt.Println(keywords)
   var b = strings.Join(keywords, ", ")
-  fmt.Println(911, b)
 	req := gogpt.CompletionRequest{
-		Model: "davinci",
+		Model: "text-davinci-002",
 		MaxTokens: 30,
-		Prompt:    b,
+		Prompt:    strings.ReplaceAll(prompt, "{example}", b),
 	}
 	resp, err := c.CreateCompletion(ctx, req)
 	if err != nil {
@@ -45,18 +52,30 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Println(1, resp.Choices[0].Text)
 
+  var d []string
   //fmt.Printf("%+v", searchResp)
   // fmt.Fprintf(w, searchResp.SearchResults[0].Text, r)
   for _, v := range resp.Choices {
-    fmt.Println(011100, v.Text)
+    d = append(d, v.Text)
   }
-  fmt.Fprintf(w, resp.Choices[0].Text)
+
+  type Man struct {
+    Sentence string
+  }
+
+  var x Man
+  x.Sentence = d[0]
+  sentence, err := json.Marshal(x)
+  if err != nil {
+    fmt.Println("ERROR 2", err)
+  }
+  w.Write(sentence)
 }
 
 func Middleware(fn http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authentication")
-		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
 		w.Header().Set("Access-Control-Allow-Credentials", "true")
     w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 		fn.ServeHTTP(w, r)

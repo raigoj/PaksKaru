@@ -62,6 +62,9 @@ function App() {
   const getText = () => {
     refetch()
   }
+  if (adData) {
+    console.log(adData)
+  }
 
   return (
     <div className="App">
@@ -77,7 +80,7 @@ function App() {
         <em>press enter or comma to add new tag</em>
         {isLoading && <em>Loading</em>}
         {isError && <h1>ERROR</h1>}
-        {adData && <h1>{adData}</h1>}
+        {adData && <h1>{adData.Sentence}</h1>}
         <CreateButton clicker={getText} />
       </div>
     </div>

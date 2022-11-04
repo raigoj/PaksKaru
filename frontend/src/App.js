@@ -2,11 +2,9 @@ import logo from './logo.svg';
 import './App.css';
 import React, {useState} from 'react'
 import Select from 'react-select'
-import { QueryClient, useQuery, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { useQuery } from "@tanstack/react-query";
 import { TagsInput } from "react-tag-input-component";
 
-const queryClient = new QueryClient()
 async function fetchText(kw) {
   console.log(kw)
   return await fetch(`http://localhost:8080/`, {

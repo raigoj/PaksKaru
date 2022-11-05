@@ -17,7 +17,7 @@ func main() {
 }
 
 func mainHandler(w http.ResponseWriter, r *http.Request) {
-  c := gogpt.NewClient("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")
+  c := gogpt.NewClient("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")
   ctx := context.Background()
   var v map[string][]string
 
@@ -43,8 +43,8 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
   var b = strings.Join(keywords, ", ")
 	req := gogpt.CompletionRequest{
 		Model: "text-davinci-002",
-		MaxTokens: 30,
-    N: 3,
+		MaxTokens: 10,
+    N: 0,
 		Prompt:    strings.ReplaceAll(prompt, "{example}", b),
 	}
 	resp, err := c.CreateCompletion(ctx, req)

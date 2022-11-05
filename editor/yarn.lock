@@ -2500,6 +2500,11 @@ remove-accents@0.4.2:
   resolved "https://registry.yarnpkg.com/remove-accents/-/remove-accents-0.4.2.tgz#0a43d3aaae1e80db919e07ae254b285d9e1c7bb5"
   integrity sha512-7pXIJqJOq5tFgG1A2Zxti3Ht8jJF337m4sowbuHsW30ZnkQFnDzy9qBNhgzX8ZLW4+UBcXiiR7SwR6pokHsxiA==
 
+replicate-api@^0.1.5:
+  version "0.1.5"
+  resolved "https://registry.yarnpkg.com/replicate-api/-/replicate-api-0.1.5.tgz#8e0f51a43048467efe3289b735a1048c712e55fd"
+  integrity sha512-RixINt5inRrtEYe7AxBEUKgzrXHzbm1zJZLOgnAnZXHQIk0uO6HSucpPwbd9TLyLoOtV4KZCLMy9x9fufWd2yQ==
+
 requires-port@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/requires-port/-/requires-port-1.0.0.tgz#925d2601d39ac485e091cf0da5c6e694dc3dcaff"

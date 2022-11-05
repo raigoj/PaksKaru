@@ -1,5 +1,7 @@
 import React, {useState} from "react"
 import { DesignEditorContext } from "~/contexts/DesignEditor"
+import { IScene } from "@layerhub-io/types"
+import _ from "lodash"
 import useDesignEditorPages from "~/hooks/useDesignEditorScenes"
 import { getDefaultTemplate } from "~/constants/design-editor"
 import { Button, SIZE } from "baseui/button"
@@ -20,8 +22,7 @@ import api from "~/services/api"
 import { IComponent } from "~/interfaces/DesignEditor"
 import { TagsInput } from "react-tag-input-component";
 import { useQuery } from "@tanstack/react-query";
-import { queryClient } from "~/main"
-import { addScene } from "../../Footer/Presentation/Scenes"
+import { flushSync } from "react-dom"
 
 async function fetchImage(kw) {
   console.log(kw)
@@ -119,9 +120,19 @@ export default function () {
 
   const editor = useEditor()
 
+  const updateCurrentScene = React.useCallback(
+    async (design: IScene) => {
+      console.log("updateCurrentScene")
+      await editor.scene.importFromJSON(design)
+      const updatedPreview = (await editor.renderer.render(design)) as string
+      setCurrentPreview(updatedPreview)
+    },
+    [editor, currentScene]
+  )
   const setIsSidebarOpen = useSetIsSidebarOpen()
   const components = useSelector(selectPublicComponents)
   const addObject = async (text) => {
+    console.log("addObject")
     if (text?.nativeEvent) {
       text = "Add some text"
     }
@@ -149,36 +160,49 @@ export default function () {
       }
       editor.objects.add(options)
     }
+    return Promise.resolve()
   }
 
   const addScene = React.useCallback(async () => {
-    setCurrentPreview("")
+    console.log("addScene")
+    setCurrentPreview(x => "")
     const updatedTemplate = editor.scene.exportToJSON()
     const updatedPreview = await editor.renderer.render(updatedTemplate)
 
     const updatedPages = scenes.map((p) => {
       if (p.id === updatedTemplate.id) {
-        return { ...updatedTemplate, preview: updatedPreview }
+        return _.merge(updatedTemplate, {preview: updatedPreview})
       }
       return p
     })
 
     const defaultTemplate = getDefaultTemplate(currentDesign.frame)
     const newPreview = await editor.renderer.render(defaultTemplate)
-    const newPage = { ...defaultTemplate, id: nanoid(), preview: newPreview } as any
-    const newPages = [...updatedPages, newPage] as any[]
-    setScenes(newPages)
-    setCurrentScene(newPage)
-    console.log("Add scene", newPage)
+    const newPage = {...defaultTemplate, id: nanoid(), preview: newPreview}
+    updatedPages.push(newPage)
+    let wow = scenes.slice()
+    _.merge(wow, updatedPages)
+    flushSync(async () => {
+      console.log("DOWN")
+      await wait(1000); // wait 1s
+      await setScenes(x => wow)
+      console.log("BANG")
+      await wait(1000); // wait 1s
+      await setCurrentScene(x => newPage)
+      console.log("END")
+    })
     return Promise.resolve()
   }, [scenes, currentDesign])
+  const wait = (timeToDelay) => new Promise((resolve) => setTimeout(resolve, timeToDelay));
 
   const addAllScenes = async () => {
-    console.log("LAW")
-    for (let i = 0; i < 3; i++) {
-      console.log("SPACE")
-      let x = await addObject(adData.Sentence[i])
-      let y = await addScene()
+    for (let i = 0; i < 4; i++) {
+      await addObject(adData.Sentence[i])
+      console.log("addObject end")
+      await wait(1000); // wait 1s
+      await addScene()
+      console.log("addScene end")
+      await wait(1000); // wait 1s
     }
   }
 

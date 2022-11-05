@@ -22,7 +22,6 @@ import { TagsInput } from "react-tag-input-component";
 import { useQuery } from "@tanstack/react-query";
 import {queryClient } from "../../../../../main"
 async function fetchWithTimeout(resource, options = {}) {
-  console.log("Fetching timeout")
   const { timeout = 98800 } = options;
 
   const controller = new AbortController();
@@ -36,8 +35,6 @@ async function fetchWithTimeout(resource, options = {}) {
 }
 async function fetchImage(kw) {
   let x = JSON.stringify({Sentence: kw})
-  console.log(x)
-  console.log("IMAGE GETTING")
   return await fetchWithTimeout(`http://localhost:8080/img?s=${kw}`, {
     mode: 'cors',
     cache: 'no-cache',
@@ -140,7 +137,6 @@ export default function () {
   )
 
   if (imgData && !imgSet) {
-    console.log(imgData)
     addObjectImg(imgData.output[0])
     setImgSet(true)
     editor.objects.setAsBackgroundImage()
@@ -155,7 +151,6 @@ export default function () {
   const setIsSidebarOpen = useSetIsSidebarOpen()
   const components = useSelector(selectPublicComponents)
   const addObject = async (text) => {
-    console.log(131, text)
     if (text?.nativeEvent) {
       text = "Add some text"
     }
@@ -171,20 +166,37 @@ export default function () {
         width: 420,
         text: text,
         fontSize: 92,
-        fill: "white",
+        style: {
+          stroke: "#000000",
+          fill: null,
+          strokeWidth: 2,
+          shadow: {
+            blur: 25,
+            color: "rgba(0,0,0,0.45)",
+            offsetX: 0,
+            offsetY: 0,
+            enabled: false,
+          },
+        },
+        stroke: "#000000",
+        fill: null,
+        strokeWidth: 2,
+        shadow: {
+          blur: 25,
+          color: "rgba(0,0,0,0.45)",
+          offsetX: 0,
+          offsetY: 0,
+          enabled: false,
+        },
         fontFamily: font.name,
         textAlign: "center",
         fontStyle: "normal",
         fontWeight: "Bold",
         fontURL: font.url,
-        stroke: "#000000",
-        strokeWidth: 4,
         metadata: {
         },
       }
-      console.log(157, text)
       editor.objects.add(options)
-      console.log(text)
     }
   }
 

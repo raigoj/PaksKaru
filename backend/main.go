@@ -24,11 +24,11 @@ func imgHandler(w http.ResponseWriter, r *http.Request) {
   url :=  "https://api.replicate.com/v1/predictions"
 
   // Create a Bearer string by appending string access token
-  var bearer = "Token " + "5f0445d9cef28e21d2dc1e30c446dbe523517e97"
+  var bearer = "Token " + "2c941b819a31acdb92fcb6ccad363f54f12e8522"
   jsonBody := []byte(`{"version": "8abccf52e7cba9f6e82317253f4a3549082e966db5584e92c808ece132037776", "input": {"prompt": "dogs playing"}}`)
   bodyReader := bytes.NewReader(jsonBody)
   // Create a new request using http
-  req, err := http.NewRequest("POST", url, bodyReader)
+  req, err := http.NewRequest(http.MethodPost, url, bodyReader)
 
     // add authorization header to the req
     req.Header.Add("Authorization", bearer)
@@ -45,6 +45,7 @@ func imgHandler(w http.ResponseWriter, r *http.Request) {
   if err != nil {
     log.Println("Error while reading the response bytes:", err)
   }
+  fmt.Printf("client: response body: %s\n", body)
   type Response struct {
     CompletedAt interface{} `json:"completed_at"`
     CreatedAt   time.Time   `json:"created_at"`
@@ -72,8 +73,8 @@ func imgHandler(w http.ResponseWriter, r *http.Request) {
   if err := json.Unmarshal(body, &result); err != nil {   // Parse []byte to go struct pointer
     fmt.Println("Can not unmarshal JSON")
   }
-  fmt.Println(result.Urls.Get)
-  req, err = http.NewRequest("GET", result.Urls.Get, bodyReader)
+  fmt.Println(result)
+  req, err = http.NewRequest(http.MethodGet, result.Urls.Get, nil)
 
     // add authorization header to the req
     req.Header.Add("Authorization", bearer)
@@ -81,9 +82,9 @@ func imgHandler(w http.ResponseWriter, r *http.Request) {
   // Send req using http Client
   resp, err = client.Do(req)
   if err != nil {
+    fmt.Println("SHIT")
     log.Println("Error on response.\n[ERROR] -", err)
   }
-  defer resp.Body.Close()
 
   body, err = ioutil.ReadAll(resp.Body)
   if err != nil {
@@ -118,7 +119,7 @@ func imgHandler(w http.ResponseWriter, r *http.Request) {
   fmt.Println(imgResult.Output)
   var image = ""
   for (image == "") {
-    req, err = http.NewRequest("GET", result.Urls.Get, bodyReader)
+    req, err = http.NewRequest(http.MethodGet, result.Urls.Get, nil)
 
     // add authorization header to the req
     req.Header.Add("Authorization", bearer)
@@ -128,7 +129,6 @@ func imgHandler(w http.ResponseWriter, r *http.Request) {
   if err != nil {
     log.Println("Error on response.\n[ERROR] -", err)
   }
-  defer resp.Body.Close()
 
     body, err = ioutil.ReadAll(resp.Body)
     if err != nil {

@@ -22,7 +22,7 @@ import { TagsInput } from "react-tag-input-component";
 import { useQuery } from "@tanstack/react-query";
 async function fetchWithTimeout(resource, options = {}) {
   console.log("Fetching timeout")
-  const { timeout = 180000 } = options;
+  const { timeout = 98800 } = options;
 
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), timeout);
@@ -82,7 +82,6 @@ const textOptions = {
 
 export default function () {
   const [copies, setCopies] = useState(false);
-  const [imgReady, setImgReady] = useState(false);
   const scenes = useDesignEditorPages()
   const [selected, setSelected] = useState();
   const [currentPreview, setCurrentPreview] = React.useState("")
@@ -118,12 +117,10 @@ export default function () {
   const editor = useEditor()
   const addObjectImg = React.useCallback(
     (url: string) => {
-      console.log(url)
       if (editor) {
         const options = {
           type: "StaticImage",
           src: url,
-          
         }
         editor.objects.add(options)
       }
@@ -131,10 +128,9 @@ export default function () {
     [editor]
   )
 
-  if (imgData && !imgReady) {
-    console.log(imgData.output[0])
+  if (imgData) {
+    console.log(imgData)
     addObjectImg(imgData.output[0])
-    setImgReady(true)
   }
   const getText = () => {
     if (selected) {

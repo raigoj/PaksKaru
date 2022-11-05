@@ -20,6 +20,7 @@ import api from "~/services/api"
 import { IComponent } from "~/interfaces/DesignEditor"
 import { TagsInput } from "react-tag-input-component";
 import { useQuery } from "@tanstack/react-query";
+import {queryClient } from "../../../../../main"
 async function fetchWithTimeout(resource, options = {}) {
   console.log("Fetching timeout")
   const { timeout = 98800 } = options;
@@ -34,21 +35,24 @@ async function fetchWithTimeout(resource, options = {}) {
   return response;
 }
 async function fetchImage(kw) {
-  console.log(kw)
+  let x = JSON.stringify({Sentence: kw})
+  console.log(x)
   console.log("IMAGE GETTING")
-  return await fetchWithTimeout("http://localhost:8080/img", {
+  return await fetchWithTimeout(`http://localhost:8080/img?s=${kw}`, {
     mode: 'cors',
     cache: 'no-cache',
     credentials: 'include',
     headers: {
       "Content-Type": "application/json"
     },
-    method: "GET"
+    method: "GET",
   }).then((response) => {
     return response.json()
   });
 }
-async function fetchText(kw) {
+async function fetchText(kw, {setImgSet}) {
+  setImgSet(false)
+  queryClient.invalidateQueries(["image"])
   kw = {keywords: kw}
   let x = JSON.stringify(kw)
   return await fetch(`http://localhost:8080/`, {
@@ -103,11 +107,11 @@ export default function () {
     error,
     isPreviousData,
     refetch
-  } = useQuery(["company"], () => fetchText(selected), {
+  } = useQuery(["company"], () => fetchText(selected, {setImgSet}), {
     refetchOnWindowFocus: false,
     enabled: false,
     refetchOnMount: false,
-    retry: 1,
+    retry: 0,
     staleTime: 200,
   });
 
@@ -118,7 +122,7 @@ export default function () {
     enabled: !!adData,
     refetchOnMount: false,
     retry: 0,
-    staleTime: 200,
+    cacheTime: 10
   });
 
   const editor = useEditor()
@@ -171,9 +175,10 @@ export default function () {
         fontFamily: font.name,
         textAlign: "center",
         fontStyle: "normal",
+        fontWeight: "Bold",
         fontURL: font.url,
         stroke: "#000000",
-        strokeWidth: 2,
+        strokeWidth: 4,
         metadata: {
         },
       }

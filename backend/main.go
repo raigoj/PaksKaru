@@ -21,11 +21,13 @@ func main() {
 }
 
 func imgHandler(w http.ResponseWriter, r *http.Request) {
+  var x = r.URL.Query().Get("s")
+
   url :=  "https://api.replicate.com/v1/predictions"
 
   // Create a Bearer string by appending string access token
   var bearer = "Token " + "8b103a425be7b3d7cb4190158ad4e47f1509d07f"
-  jsonBody := []byte(`{"version": "8abccf52e7cba9f6e82317253f4a3549082e966db5584e92c808ece132037776", "input": {"prompt": "dogs playing"}}`)
+  jsonBody := []byte(`{"version": "8abccf52e7cba9f6e82317253f4a3549082e966db5584e92c808ece132037776", "input": {"prompt":"Illustration of ` + x + `"}}`)
   bodyReader := bytes.NewReader(jsonBody)
   // Create a new request using http
   req, err := http.NewRequest(http.MethodPost, url, bodyReader)
@@ -184,14 +186,14 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
   if err != nil {
     return
   }
-  var prompt = `Topic: Britain, coronavirus, beaches
-  Headline: Videos show crowded beaches in Britain
+  var prompt = `Topic: Sport, athlete, clothing
+  Headline: Just do it
 
-  Topic: Apple, Big Sur, software
-  Headline: Apple promises faster software update installation with macOS Big Sur
+  Topic: Burgers, food, snacks
+  Headline: I'm Lovin' It
 
-  Topic: Artic, climate change, satellite
-  Headline: A Satellite Lets Scientists See Antarctica’s Melting Like Never Before
+  Topic: Adventure, fun, family
+  Headline: The happiest place on Earth
 
   Topic: {example}
   Headline:`

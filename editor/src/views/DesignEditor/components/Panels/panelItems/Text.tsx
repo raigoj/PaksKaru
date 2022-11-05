@@ -1,7 +1,5 @@
 import React, {useState} from "react"
 import { DesignEditorContext } from "~/contexts/DesignEditor"
-import { IScene } from "@layerhub-io/types"
-import _ from "lodash"
 import useDesignEditorPages from "~/hooks/useDesignEditorScenes"
 import { getDefaultTemplate } from "~/constants/design-editor"
 import { Button, SIZE } from "baseui/button"
@@ -22,24 +20,31 @@ import api from "~/services/api"
 import { IComponent } from "~/interfaces/DesignEditor"
 import { TagsInput } from "react-tag-input-component";
 import { useQuery } from "@tanstack/react-query";
-import { flushSync } from "react-dom"
+async function fetchWithTimeout(resource, options = {}) {
+  console.log("Fetching timeout")
+  const { timeout = 180000 } = options;
 
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeout);
+  const response = await fetch(resource, {
+    ...options,
+    signal: controller.signal  
+  });
+  clearTimeout(id);
+  return response;
+}
 async function fetchImage(kw) {
   console.log(kw)
-  let x = {version: "8abccf52e7cba9f6e82317253f4a3549082e966db5584e92c808ece132037776", input: {prompt: kw}}
-  x = JSON.stringify(x)
-  return await fetch("https://api.replicate.com/v1/predictions", {
-    body: x,
-    mode: 'no-cors',
+  console.log("IMAGE GETTING")
+  return await fetchWithTimeout("http://localhost:8080/img", {
+    mode: 'cors',
     cache: 'no-cache',
     credentials: 'include',
     headers: {
-      "Authorization": 'Token 5f0445d9cef28e21d2dc1e30c446dbe523517e97',
       "Content-Type": "application/json"
     },
-    method: "POST"
+    method: "GET"
   }).then((response) => {
-    response.json().then(i => console.log(i))
     return response.json()
   });
 }
@@ -77,6 +82,7 @@ const textOptions = {
 
 export default function () {
   const [copies, setCopies] = useState(false);
+  const [imgReady, setImgReady] = useState(false);
   const scenes = useDesignEditorPages()
   const [selected, setSelected] = useState();
   const [currentPreview, setCurrentPreview] = React.useState("")
@@ -103,36 +109,44 @@ export default function () {
     data: imgData,
   } = useQuery(["image"], () => fetchImage(adData.Sentence), {
     refetchOnWindowFocus: false,
-    enabled: false,
+    enabled: !!adData,
     refetchOnMount: false,
-    retry: 1,
+    retry: 0,
     staleTime: 200,
   });
-  if (imgData) {
-    console.log(imgData)
-  }
 
+  const editor = useEditor()
+  const addObjectImg = React.useCallback(
+    (url: string) => {
+      console.log(url)
+      if (editor) {
+        const options = {
+          type: "StaticImage",
+          src: url,
+          
+        }
+        editor.objects.add(options)
+      }
+    },
+    [editor]
+  )
+
+  if (imgData && !imgReady) {
+    console.log(imgData.output[0])
+    addObjectImg(imgData.output[0])
+    setImgReady(true)
+  }
   const getText = () => {
     if (selected) {
       refetch()
     }
   }
 
-  const editor = useEditor()
 
-  const updateCurrentScene = React.useCallback(
-    async (design: IScene) => {
-      console.log("updateCurrentScene")
-      await editor.scene.importFromJSON(design)
-      const updatedPreview = (await editor.renderer.render(design)) as string
-      setCurrentPreview(updatedPreview)
-    },
-    [editor, currentScene]
-  )
   const setIsSidebarOpen = useSetIsSidebarOpen()
   const components = useSelector(selectPublicComponents)
   const addObject = async (text) => {
-    console.log("addObject")
+    console.log(131, text)
     if (text?.nativeEvent) {
       text = "Add some text"
     }
@@ -158,60 +172,15 @@ export default function () {
         metadata: {
         },
       }
+      console.log(157, text)
       editor.objects.add(options)
+      console.log(text)
     }
-    return Promise.resolve()
   }
 
-  const addScene = React.useCallback(async () => {
-    console.log("addScene")
-    setCurrentPreview(x => "")
-    const updatedTemplate = editor.scene.exportToJSON()
-    const updatedPreview = await editor.renderer.render(updatedTemplate)
-
-    const updatedPages = scenes.map((p) => {
-      if (p.id === updatedTemplate.id) {
-        return _.merge(updatedTemplate, {preview: updatedPreview})
-      }
-      return p
-    })
-
-    const defaultTemplate = getDefaultTemplate(currentDesign.frame)
-    const newPreview = await editor.renderer.render(defaultTemplate)
-    const newPage = {...defaultTemplate, id: nanoid(), preview: newPreview}
-    updatedPages.push(newPage)
-    let wow = scenes.slice()
-    let x = _.merge(wow, updatedPages)
-    console.log(x, wow, updatedPages)
-    flushSync(async () => {
-      console.log("DOWN")
-      await wait(1000); // wait 1s
-      console.log(123, wow)
-      await setScenes(x => x = wow)
-      await wait(1000); // wait 1s
-      console.log("BANG", scenes, x)
-      await wait(1000); // wait 1s
-      await setCurrentScene(x => x = scenes.slice(-1)[0])
-      console.log("END")
-    })
-    return Promise.resolve()
-  }, [scenes, currentDesign])
-  const wait = (timeToDelay) => new Promise((resolve) => setTimeout(resolve, timeToDelay));
-
-  const addAllScenes = async () => {
-    for 
-      await addObject(adData.Sentence[0])
-      console.log("addObject end")
-      await wait(1000); // wait 1s
-      await addScene()
-      console.log("addScene end")
-      await wait(1000); // wait 1s
-      await updateCurrentScene(currentScene)
-      console.log("updateCurrentScene end")
-  }
 
   if (adData && copies && !isStale) {
-    addAllScenes()
+    addObject(adData.Sentence)
     setCopies(false)
     setSelected(undefined)
   }

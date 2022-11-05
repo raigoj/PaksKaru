@@ -1,21 +1,179 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
-  "strings"
+	"strings"
+	"time"
 
 	gogpt "github.com/sashabaranov/go-gpt3"
 )
 
 func main() {
   http.HandleFunc("/", Middleware(mainHandler))
+  http.HandleFunc("/img", Middleware(imgHandler))
   log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
+func imgHandler(w http.ResponseWriter, r *http.Request) {
+  url :=  "https://api.replicate.com/v1/predictions"
+
+  // Create a Bearer string by appending string access token
+  var bearer = "Token " + "5f0445d9cef28e21d2dc1e30c446dbe523517e97"
+  jsonBody := []byte(`{"version": "8abccf52e7cba9f6e82317253f4a3549082e966db5584e92c808ece132037776", "input": {"prompt": "dogs playing"}}`)
+  bodyReader := bytes.NewReader(jsonBody)
+  // Create a new request using http
+  req, err := http.NewRequest("POST", url, bodyReader)
+
+    // add authorization header to the req
+    req.Header.Add("Authorization", bearer)
+
+    // Send req using http Client
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    if err != nil {
+        log.Println("Error on response.\n[ERROR] -", err)
+    }
+    defer resp.Body.Close()
+
+  body, err := ioutil.ReadAll(resp.Body)
+  if err != nil {
+    log.Println("Error while reading the response bytes:", err)
+  }
+  type Response struct {
+    CompletedAt interface{} `json:"completed_at"`
+    CreatedAt   time.Time   `json:"created_at"`
+    Error       interface{} `json:"error"`
+    Hardware    string      `json:"hardware"`
+    ID          string      `json:"id"`
+    Input       struct {
+      Prompt string `json:"prompt"`
+    } `json:"input"`
+    Logs    interface{} `json:"logs"`
+    Metrics struct {
+    } `json:"metrics"`
+    Output    interface{} `json:"output"`
+    StartedAt interface{} `json:"started_at"`
+    Status    string      `json:"status"`
+    Urls      struct {
+      Get    string `json:"get"`
+      Cancel string `json:"cancel"`
+    } `json:"urls"`
+    Version          string      `json:"version"`
+    WebhookCompleted interface{} `json:"webhook_completed"`
+  }
+  // snippet only
+  var result Response
+  if err := json.Unmarshal(body, &result); err != nil {   // Parse []byte to go struct pointer
+    fmt.Println("Can not unmarshal JSON")
+  }
+  fmt.Println(result.Urls.Get)
+  req, err = http.NewRequest("GET", result.Urls.Get, bodyReader)
+
+    // add authorization header to the req
+    req.Header.Add("Authorization", bearer)
+
+  // Send req using http Client
+  resp, err = client.Do(req)
+  if err != nil {
+    log.Println("Error on response.\n[ERROR] -", err)
+  }
+  defer resp.Body.Close()
+
+  body, err = ioutil.ReadAll(resp.Body)
+  if err != nil {
+    log.Println("Error while reading the response bytes:", err)
+  }
+  type ImgResponse struct {
+    CompletedAt interface{} `json:"completed_at"`
+    CreatedAt   time.Time   `json:"created_at"`
+    Error       interface{} `json:"error"`
+    Hardware    string      `json:"hardware"`
+    ID          string      `json:"id"`
+    Input       struct {
+      Prompt string `json:"prompt"`
+    } `json:"input"`
+    Logs    string `json:"logs"`
+    Metrics struct {
+    } `json:"metrics"`
+    Output    string    `json:"output"`
+    StartedAt time.Time `json:"started_at"`
+    Status    string    `json:"status"`
+    Urls      struct {
+      Get    string `json:"get"`
+      Cancel string `json:"cancel"`
+    } `json:"urls"`
+    Version          string      `json:"version"`
+    WebhookCompleted interface{} `json:"webhook_completed"`
+  }
+  var imgResult ImgResponse
+  if err := json.Unmarshal(body, &imgResult); err != nil {   // Parse []byte to go struct pointer
+    fmt.Println("Can not unmarshal JSON")
+  }
+  fmt.Println(imgResult.Output)
+  var image = ""
+  for (image == "") {
+    req, err = http.NewRequest("GET", result.Urls.Get, bodyReader)
+
+    // add authorization header to the req
+    req.Header.Add("Authorization", bearer)
+
+  // Send req using http Client
+  resp, err = client.Do(req)
+  if err != nil {
+    log.Println("Error on response.\n[ERROR] -", err)
+  }
+  defer resp.Body.Close()
+
+    body, err = ioutil.ReadAll(resp.Body)
+    if err != nil {
+      log.Println("Error while reading the response bytes:", err)
+    }
+    type ImgResponse struct {
+      CompletedAt time.Time   `json:"completed_at"`
+      CreatedAt   time.Time   `json:"created_at"`
+      Error       interface{} `json:"error"`
+      Hardware    string      `json:"hardware"`
+      ID          string      `json:"id"`
+      Input       struct {
+        Prompt string `json:"prompt"`
+      } `json:"input"`
+      Logs    string `json:"logs"`
+      Metrics struct {
+        PredictTime float64 `json:"predict_time"`
+      } `json:"metrics"`
+      Output    []string  `json:"output"`
+      StartedAt time.Time `json:"started_at"`
+      Status    string    `json:"status"`
+      Urls      struct {
+        Get    string `json:"get"`
+        Cancel string `json:"cancel"`
+      } `json:"urls"`
+      Version          string      `json:"version"`
+      WebhookCompleted interface{} `json:"webhook_completed"`
+    }
+    var imgResult ImgResponse
+    if err := json.Unmarshal(body, &imgResult); err != nil {   // Parse []byte to go struct pointer
+      fmt.Println("Can not unmarshal JSON")
+    }
+
+    if (imgResult.Status == "succeeded") {
+      image = imgResult.Output[0]
+      fmt.Println(image)
+      resp, err := json.Marshal(imgResult)
+      if err != nil {
+        fmt.Println("ERROR 2", err)
+      }
+      w.Write(resp)
+      return
+    }
+  }
+}
 func mainHandler(w http.ResponseWriter, r *http.Request) {
   c := gogpt.NewClient("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")
   ctx := context.Background()
@@ -61,11 +219,11 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
   }
 
   type Man struct {
-    Sentence []string
+    Sentence string
   }
 
   var x Man
-  x.Sentence = d
+  x.Sentence = d[0]
   sentence, err := json.Marshal(x)
   if err != nil {
     fmt.Println("ERROR 2", err)

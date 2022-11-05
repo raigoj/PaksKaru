@@ -28,7 +28,7 @@ func videoHandler(w http.ResponseWriter, r *http.Request) {
 
   // Create a Bearer string by appending string access token
   var bearer = "Token " + "7d0034559506166e11177d84e04e6813bd3261ac"
-  jsonBody := []byte(`{"version": "2d87f0f8bc282042002f8d24458bbf588eee5e8d8fffb6fbb10ed48d1dac409e", "input": {"prompt":` + x + ` | ` + x + `"}}`)
+  jsonBody := []byte(`{"version": "2d87f0f8bc282042002f8d24458bbf588eee5e8d8fffb6fbb10ed48d1dac409e", "input": {"prompts":` + x + ` | ` + x + `", "fps": "10", "num_steps": "6"}}`)
   bodyReader := bytes.NewReader(jsonBody)
   // Create a new request using http
   req, err := http.NewRequest(http.MethodPost, url, bodyReader)

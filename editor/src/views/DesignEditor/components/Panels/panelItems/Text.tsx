@@ -181,14 +181,17 @@ export default function () {
     const newPage = {...defaultTemplate, id: nanoid(), preview: newPreview}
     updatedPages.push(newPage)
     let wow = scenes.slice()
-    _.merge(wow, updatedPages)
+    let x = _.merge(wow, updatedPages)
+    console.log(x, wow, updatedPages)
     flushSync(async () => {
       console.log("DOWN")
       await wait(1000); // wait 1s
-      await setScenes(x => wow)
-      console.log("BANG")
+      console.log(123, wow)
+      await setScenes(x => x = wow)
       await wait(1000); // wait 1s
-      await setCurrentScene(x => newPage)
+      console.log("BANG", scenes, x)
+      await wait(1000); // wait 1s
+      await setCurrentScene(x => x = scenes.slice(-1)[0])
       console.log("END")
     })
     return Promise.resolve()
@@ -196,14 +199,15 @@ export default function () {
   const wait = (timeToDelay) => new Promise((resolve) => setTimeout(resolve, timeToDelay));
 
   const addAllScenes = async () => {
-    for (let i = 0; i < 4; i++) {
-      await addObject(adData.Sentence[i])
+    for 
+      await addObject(adData.Sentence[0])
       console.log("addObject end")
       await wait(1000); // wait 1s
       await addScene()
       console.log("addScene end")
       await wait(1000); // wait 1s
-    }
+      await updateCurrentScene(currentScene)
+      console.log("updateCurrentScene end")
   }
 
   if (adData && copies && !isStale) {

@@ -44,6 +44,7 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 	req := gogpt.CompletionRequest{
 		Model: "text-davinci-002",
 		MaxTokens: 30,
+    N: 3,
 		Prompt:    strings.ReplaceAll(prompt, "{example}", b),
 	}
 	resp, err := c.CreateCompletion(ctx, req)
@@ -60,11 +61,11 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
   }
 
   type Man struct {
-    Sentence string
+    Sentence []string
   }
 
   var x Man
-  x.Sentence = d[0]
+  x.Sentence = d
   sentence, err := json.Marshal(x)
   if err != nil {
     fmt.Println("ERROR 2", err)

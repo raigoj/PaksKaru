@@ -5,7 +5,7 @@ import { getDefaultTemplate } from "~/constants/design-editor"
 import { Button, SIZE } from "baseui/button"
 import { textComponents } from "~/constants/editor"
 import { useStyletron } from "styletron-react"
-import { useEditor } from "@layerhub-io/react"
+import { useActiveObject, useEditor } from "@layerhub-io/react"
 import { FontItem } from "~/interfaces/common"
 import { loadFonts } from "~/utils/fonts"
 import { ILayer, IStaticText } from "@layerhub-io/types"
@@ -82,11 +82,18 @@ const textOptions = {
 
 export default function () {
   const [copies, setCopies] = useState(false);
+  const [imgSet, setImgSet] = useState(false);
   const scenes = useDesignEditorPages()
+  const activeObject: any = useActiveObject()
   const [selected, setSelected] = useState();
   const [currentPreview, setCurrentPreview] = React.useState("")
   const { setScenes, setCurrentScene, currentScene, setCurrentDesign, currentDesign } =
     React.useContext(DesignEditorContext)
+  React.useEffect(() => {
+    {activeObject?.type === "StaticImage" && (
+      editor.objects.setAsBackgroundImage()
+    )}
+  })
 
   let {
     isLoading,
@@ -128,9 +135,11 @@ export default function () {
     [editor]
   )
 
-  if (imgData) {
+  if (imgData && !imgSet) {
     console.log(imgData)
     addObjectImg(imgData.output[0])
+    setImgSet(true)
+    editor.objects.setAsBackgroundImage()
   }
   const getText = () => {
     if (selected) {

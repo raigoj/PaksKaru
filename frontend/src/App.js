@@ -9,7 +9,7 @@ async function fetchText(kw) {
   kw = {keywords: kw}
   let x = JSON.stringify(kw)
   console.log(x)
-  return await fetch(`http://localhost:8080/`, {
+  return await fetch(`http://localhost:9254/`, {
     method: 'POST',
     mode: 'cors',
     cache: 'no-cache',

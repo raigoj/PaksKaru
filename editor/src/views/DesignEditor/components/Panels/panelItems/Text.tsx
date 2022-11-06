@@ -22,7 +22,7 @@ import { TagsInput } from "react-tag-input-component";
 import { useQuery } from "@tanstack/react-query";
 import {queryClient } from "../../../../../main"
 async function fetchWithTimeout(resource, options = {}) {
-  const { timeout = 98800 } = options;
+  const { timeout = 9998800 } = options;
 
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), timeout);
@@ -94,6 +94,20 @@ export default function () {
     {activeObject?.type === "StaticImage" && (
       editor.objects.setAsBackgroundImage()
     )}
+    {activeObject?.type === "StaticText" && (
+      editor.objects.update({
+        stroke: "#000000",
+        fill: null,
+        strokeWidth: 2,
+        shadow: {
+          blur: 25,
+          color: "rgba(0,0,0,0.45)",
+          offsetX: 0,
+          offsetY: 0,
+          enabled: false,
+        },
+      })
+    )}
   })
 
   let {
@@ -137,6 +151,7 @@ export default function () {
   )
 
   if (imgData && !imgSet) {
+    console.log(imgData)
     addObjectImg(imgData.output[0])
     setImgSet(true)
     editor.objects.setAsBackgroundImage()

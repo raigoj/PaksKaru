@@ -28,7 +28,7 @@ export const AppContext = createContext<IAppContext>({
   setUploads: () => {},
   shapes: [],
   setShapes: () => {},
-  activePanel: PanelType.TEMPLATES,
+  activePanel: PanelType.TEXT,
   setActivePanel: () => {},
   activeSubMenu: null,
   setActiveSubMenu: (value: string) => {},

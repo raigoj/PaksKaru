@@ -75,5 +75,6 @@ export const VIDEO_PANEL_ITEMS = [
 
 export enum PanelType {
   TEMPLATES = "Templates",
+  TEXT = "Text",
   BACKGROUND = "Background",
 }

@@ -115,7 +115,6 @@ export default function () {
   })
 
   let {
-    isLoading,
     data: adData,
     isError,
     isStale,
@@ -132,6 +131,8 @@ export default function () {
 
   let {
     data: imgData,
+    isLoading,
+    isFetching
   } = useQuery(["image"], () => fetchImage(adData.Sentence, selected), {
     refetchOnWindowFocus: false,
     enabled: !!adData,
@@ -360,6 +361,7 @@ export default function () {
             >Create</Button>
           </div>
           }
+          {isFetching && <div>Loading image</div>}
           <Block
             $style={{
               paddingTop: "0.5rem",

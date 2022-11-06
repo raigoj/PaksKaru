@@ -150,6 +150,7 @@ export default function () {
         }
         editor.objects.add(options)
       }
+      queryClient.invalidateQueries()
     },
     [editor]
   )

@@ -1,4 +1,4 @@
-import React, {useState} from "react"
+import React, { useState } from "react"
 import { DesignEditorContext } from "~/contexts/DesignEditor"
 import useDesignEditorPages from "~/hooks/useDesignEditorScenes"
 import { getDefaultTemplate } from "~/constants/design-editor"
@@ -18,56 +18,54 @@ import { useSelector } from "react-redux"
 import { selectPublicComponents } from "~/store/slices/components/selectors"
 import api from "~/services/api"
 import { IComponent } from "~/interfaces/DesignEditor"
-import { TagsInput } from "react-tag-input-component";
-import { useQuery } from "@tanstack/react-query";
-import {queryClient } from "../../../../../main"
+import { TagsInput } from "react-tag-input-component"
+import { useQuery } from "@tanstack/react-query"
+import { queryClient } from "../../../../../main"
 async function fetchWithTimeout(resource, options = {}) {
-  const { timeout = 9998800 } = options;
+  const { timeout = 9998800 } = options
 
-  const controller = new AbortController();
-  const id = setTimeout(() => controller.abort(), timeout);
+  const controller = new AbortController()
+  const id = setTimeout(() => controller.abort(), timeout)
   const response = await fetch(resource, {
     ...options,
-    signal: controller.signal  
-  });
-  clearTimeout(id);
-  return response;
+    signal: controller.signal,
+  })
+  clearTimeout(id)
+  return response
 }
 async function fetchImage(kw, selected) {
   console.log(selected)
   let i = selected.join(", ")
   let y = `${kw}, ${i}`
   console.log(y)
-  let x = JSON.stringify({Sentence: y})
-  return await fetchWithTimeout(`http://localhost:8080/img?s=${kw}`, {
-    mode: 'cors',
-    cache: 'no-cache',
-    credentials: 'include',
+  let x = JSON.stringify({ Sentence: y })
+  return await fetchWithTimeout(`http://localhost:9254/img?s=${kw}`, {
+    mode: "cors",
+    cache: "no-cache",
+    credentials: "same-origin",
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     },
     method: "GET",
   }).then((response) => {
     return response.json()
-  });
+  })
 }
-async function fetchText(kw, {setImgSet}) {
+async function fetchText(kw, { setImgSet }) {
   setImgSet(false)
   queryClient.invalidateQueries(["image"])
-  kw = {keywords: kw}
+  kw = { keywords: kw }
   let x = JSON.stringify(kw)
-  return await fetch(`http://localhost:8080/`, {
-    method: 'POST',
-  mode: 'cors',
-  cache: 'no-cache',
-  credentials: 'same-origin',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: x
-  }).then((response) =>
-  response.json()
-         );
+  return await fetch(`http://localhost:9254/`, {
+    method: "POST",
+    mode: "cors",
+    cache: "no-cache",
+    credentials: "same-origin",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: x,
+  }).then((response) => response.json())
 }
 
 const textOptions = {
@@ -86,32 +84,33 @@ const textOptions = {
 }
 
 export default function () {
-  const [copies, setCopies] = useState(false);
-  const [imgSet, setImgSet] = useState(false);
+  const [copies, setCopies] = useState(false)
+  const [imgSet, setImgSet] = useState(false)
   const scenes = useDesignEditorPages()
   const activeObject: any = useActiveObject()
-  const [selected, setSelected] = useState();
+  const [selected, setSelected] = useState()
   const [currentPreview, setCurrentPreview] = React.useState("")
   const { setScenes, setCurrentScene, currentScene, setCurrentDesign, currentDesign } =
     React.useContext(DesignEditorContext)
   React.useEffect(() => {
-    {activeObject?.type === "StaticImage" && (
-      editor.objects.setAsBackgroundImage()
-    )}
-    {activeObject?.type === "StaticText" && (
-      editor.objects.update({
-        stroke: "#000000",
-        fill: null,
-        strokeWidth: 2,
-        shadow: {
-          blur: 25,
-          color: "rgba(0,0,0,0.45)",
-          offsetX: 0,
-          offsetY: 0,
-          enabled: false,
-        },
-      })
-    )}
+    {
+      activeObject?.type === "StaticImage" && editor.objects.setAsBackgroundImage()
+    }
+    {
+      activeObject?.type === "StaticText" &&
+        editor.objects.update({
+          stroke: "#000000",
+          fill: null,
+          strokeWidth: 2,
+          shadow: {
+            blur: 25,
+            color: "rgba(0,0,0,0.45)",
+            offsetX: 0,
+            offsetY: 0,
+            enabled: false,
+          },
+        })
+    }
   })
 
   let {
@@ -120,26 +119,26 @@ export default function () {
     isStale,
     error,
     isPreviousData,
-    refetch
-  } = useQuery(["company"], () => fetchText(selected, {setImgSet}), {
+    refetch,
+  } = useQuery(["company"], () => fetchText(selected, { setImgSet }), {
     refetchOnWindowFocus: false,
     enabled: false,
     refetchOnMount: false,
     retry: 0,
     staleTime: 200,
-  });
+  })
 
   let {
     data: imgData,
     isLoading,
-    isFetching
+    isFetching,
   } = useQuery(["image"], () => fetchImage(adData.Sentence, selected), {
     refetchOnWindowFocus: false,
     enabled: !!adData,
     refetchOnMount: false,
     retry: 0,
-    cacheTime: 10
-  });
+    cacheTime: 10,
+  })
 
   const editor = useEditor()
   const addObjectImg = React.useCallback(
@@ -168,7 +167,6 @@ export default function () {
     }
   }
 
-
   const setIsSidebarOpen = useSetIsSidebarOpen()
   const components = useSelector(selectPublicComponents)
   const addObject = async (text) => {
@@ -191,14 +189,12 @@ export default function () {
         textAlign: "center",
         fontStyle: "normal",
         fontURL: font.url,
-        metadata: {
-        },
+        metadata: {},
       }
       setSelected(undefined)
       editor.objects.add(options)
     }
   }
-
 
   if (adData && copies && !isStale) {
     addObject(adData.Sentence)
@@ -321,46 +317,47 @@ export default function () {
               Root: {
                 style: {
                   width: "100%",
-                  backgroundColor: "#1B263B"
-            },
-            },
+                  backgroundColor: "#1B263B",
+                },
+              },
             }}
           >
             Add text
           </Button>
-          <Button onClick={() => setCopies(!copies)}
+          <Button
+            onClick={() => setCopies(!copies)}
             size={SIZE.compact}
             overrides={{
               Root: {
                 style: {
                   width: "100%",
-                  backgroundColor: "#415A77"
-            },
-            },
+                  backgroundColor: "#415A77",
+                },
+              },
             }}
-          >Generate Ad</Button>
-          {copies && 
-          <div>
-            <TagsInput
-              value={selected}
-              onChange={setSelected}
-              name="fruits"
-              placeHolder="enter keywords"
-            />
-            Press enter to add keyword
-            <Button onClick={getText}
-              size={SIZE.compact}
-              overrides={{
-                Root: {
-                  style: {
-                    width: "100%",
-                    backgroundColor: "#778DA9"
-              },
-              },
-              }}
-            >Create</Button>
-          </div>
-          }
+          >
+            Generate Ad
+          </Button>
+          {copies && (
+            <div>
+              <TagsInput value={selected} onChange={setSelected} name="fruits" placeHolder="enter keywords" />
+              Press enter to add keyword
+              <Button
+                onClick={getText}
+                size={SIZE.compact}
+                overrides={{
+                  Root: {
+                    style: {
+                      width: "100%",
+                      backgroundColor: "#778DA9",
+                    },
+                  },
+                }}
+              >
+                Create
+              </Button>
+            </div>
+          )}
           {isFetching && <div>Loading image</div>}
           <Block
             $style={{

@@ -184,7 +184,7 @@ func imgHandler(w http.ResponseWriter, r *http.Request) {
 
   // Create a Bearer string by appending string access token
   var bearer = "Token " + "7d0034559506166e11177d84e04e6813bd3261ac"
-  jsonBody := []byte(`{"version": "8abccf52e7cba9f6e82317253f4a3549082e966db5584e92c808ece132037776", "input": {"prompt":"minimalistic advertisement photo of` + x + ` in blue and cold tones without text"}}`)
+  jsonBody := []byte(`{"version": "8abccf52e7cba9f6e82317253f4a3549082e966db5584e92c808ece132037776", "input": {"prompt":"` + x + ` in a text-free, blue and chilly toned minimalist commercial."}}`)
   bodyReader := bytes.NewReader(jsonBody)
   // Create a new request using http
   req, err := http.NewRequest(http.MethodPost, url, bodyReader)

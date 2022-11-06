@@ -33,8 +33,12 @@ async function fetchWithTimeout(resource, options = {}) {
   clearTimeout(id);
   return response;
 }
-async function fetchImage(kw) {
-  let x = JSON.stringify({Sentence: kw})
+async function fetchImage(kw, selected) {
+  console.log(selected)
+  let i = selected.join(", ")
+  let y = `${kw}, ${i}`
+  console.log(y)
+  let x = JSON.stringify({Sentence: y})
   return await fetchWithTimeout(`http://localhost:8080/img?s=${kw}`, {
     mode: 'cors',
     cache: 'no-cache',
@@ -128,7 +132,7 @@ export default function () {
 
   let {
     data: imgData,
-  } = useQuery(["image"], () => fetchImage(adData.Sentence), {
+  } = useQuery(["image"], () => fetchImage(adData.Sentence, selected), {
     refetchOnWindowFocus: false,
     enabled: !!adData,
     refetchOnMount: false,
@@ -181,36 +185,14 @@ export default function () {
         width: 420,
         text: text,
         fontSize: 92,
-        style: {
-          stroke: "#000000",
-          fill: null,
-          strokeWidth: 2,
-          shadow: {
-            blur: 25,
-            color: "rgba(0,0,0,0.45)",
-            offsetX: 0,
-            offsetY: 0,
-            enabled: false,
-          },
-        },
-        stroke: "#000000",
-        fill: null,
-        strokeWidth: 2,
-        shadow: {
-          blur: 25,
-          color: "rgba(0,0,0,0.45)",
-          offsetX: 0,
-          offsetY: 0,
-          enabled: false,
-        },
         fontFamily: font.name,
         textAlign: "center",
         fontStyle: "normal",
-        fontWeight: "Bold",
         fontURL: font.url,
         metadata: {
         },
       }
+      setSelected(undefined)
       editor.objects.add(options)
     }
   }
@@ -219,7 +201,6 @@ export default function () {
   if (adData && copies && !isStale) {
     addObject(adData.Sentence)
     setCopies(false)
-    setSelected(undefined)
   }
 
   const addComponent = async (component: any) => {
@@ -338,13 +319,24 @@ export default function () {
               Root: {
                 style: {
                   width: "100%",
+                  backgroundColor: "#1B263B"
             },
             },
             }}
           >
             Add text
           </Button>
-          <Button onClick={() => setCopies(!copies)}>Create copy</Button>
+          <Button onClick={() => setCopies(!copies)}
+            size={SIZE.compact}
+            overrides={{
+              Root: {
+                style: {
+                  width: "100%",
+                  backgroundColor: "#415A77"
+            },
+            },
+            }}
+          >Generate Ad</Button>
           {copies && 
           <div>
             <TagsInput
@@ -353,7 +345,18 @@ export default function () {
               name="fruits"
               placeHolder="enter keywords"
             />
-          <Button onClick={getText}>Create</Button>
+            Press enter to add keyword
+            <Button onClick={getText}
+              size={SIZE.compact}
+              overrides={{
+                Root: {
+                  style: {
+                    width: "100%",
+                    backgroundColor: "#778DA9"
+              },
+              },
+              }}
+            >Create</Button>
           </div>
           }
           <Block

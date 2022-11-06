@@ -35,7 +35,7 @@ async function fetchWithTimeout(resource, options = {}) {
 }
 async function fetchImage(kw) {
   let x = JSON.stringify({Sentence: kw})
-  return await fetchWithTimeout(`http://localhost:8080/video?s=${kw}`, {
+  return await fetchWithTimeout(`http://localhost:8080/img?s=${kw}`, {
     mode: 'cors',
     cache: 'no-cache',
     credentials: 'include',
@@ -93,6 +93,20 @@ export default function () {
   React.useEffect(() => {
     {activeObject?.type === "StaticImage" && (
       editor.objects.setAsBackgroundImage()
+    )}
+    {activeObject?.type === "StaticText" && (
+      editor.objects.update({
+        stroke: "#000000",
+        fill: null,
+        strokeWidth: 2,
+        shadow: {
+          blur: 25,
+          color: "rgba(0,0,0,0.45)",
+          offsetX: 0,
+          offsetY: 0,
+          enabled: false,
+        },
+      })
     )}
   })
 

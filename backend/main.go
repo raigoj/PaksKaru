@@ -183,7 +183,7 @@ func imgHandler(w http.ResponseWriter, r *http.Request) {
   url :=  "https://api.replicate.com/v1/predictions"
 
   // Create a Bearer string by appending string access token
-  var bearer = "Token " + "8b103a425be7b3d7cb4190158ad4e47f1509d07f"
+  var bearer = "Token " + "7d0034559506166e11177d84e04e6813bd3261ac"
   jsonBody := []byte(`{"version": "8abccf52e7cba9f6e82317253f4a3549082e966db5584e92c808ece132037776", "input": {"prompt":"minimalistic advertisement photo of` + x + ` in blue and cold tones without text"}}`)
   bodyReader := bytes.NewReader(jsonBody)
   // Create a new request using http

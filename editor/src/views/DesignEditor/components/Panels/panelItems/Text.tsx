@@ -40,7 +40,7 @@ async function fetchImage(kw, selected) {
   console.log(y)
   let x = JSON.stringify({ Sentence: y })
   return await fetchWithTimeout(`http://localhost:9254/img?s=${kw}`, {
-    mode: "no-cors",
+    mode: "cors",
     cache: "no-cache",
     credentials: "same-origin",
     headers: {
@@ -58,7 +58,7 @@ async function fetchText(kw, { setImgSet }) {
   let x = JSON.stringify(kw)
   return await fetch(`http://localhost:9254/`, {
     method: "POST",
-    mode: "no-cors",
+    mode: "cors",
     cache: "no-cache",
     credentials: "same-origin",
     headers: {

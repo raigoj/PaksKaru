@@ -10,6 +10,8 @@ import Presentation from "~/components/Icons/Presentation"
 const SelectEditor = () => {
   const [selectedEditor, setSelectedEditor] = React.useState<DesignType>("GRAPHIC")
   const { setEditorType } = useDesignEditorContext()
+  setEditorType(selectedEditor)
+
 
   return (
     <Block

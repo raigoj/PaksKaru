@@ -22,7 +22,7 @@ import { TagsInput } from "react-tag-input-component";
 import { useQuery } from "@tanstack/react-query";
 import {queryClient } from "../../../../../main"
 async function fetchWithTimeout(resource, options = {}) {
-  const { timeout = 98800 } = options;
+  const { timeout = 9998800 } = options;
 
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), timeout);
@@ -35,7 +35,7 @@ async function fetchWithTimeout(resource, options = {}) {
 }
 async function fetchImage(kw) {
   let x = JSON.stringify({Sentence: kw})
-  return await fetchWithTimeout(`http://localhost:8080/img?s=${kw}`, {
+  return await fetchWithTimeout(`http://localhost:8080/video?s=${kw}`, {
     mode: 'cors',
     cache: 'no-cache',
     credentials: 'include',
@@ -137,6 +137,7 @@ export default function () {
   )
 
   if (imgData && !imgSet) {
+    console.log(imgData)
     addObjectImg(imgData.output[0])
     setImgSet(true)
     editor.objects.setAsBackgroundImage()

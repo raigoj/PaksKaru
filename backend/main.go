@@ -27,7 +27,11 @@ func videoHandler(w http.ResponseWriter, r *http.Request) {
   url :=  "https://api.replicate.com/v1/predictions"
 
   // Create a Bearer string by appending string access token
+<<<<<<< HEAD
+  var bearer = "Token " + "2c941b819a31acdb92fcb6ccad363f54f12e8522"
+=======
   var bearer = "Token " + "7d0034559506166e11177d84e04e6813bd3261ac"
+>>>>>>> main
   jsonBody := []byte(`{"version": "2d87f0f8bc282042002f8d24458bbf588eee5e8d8fffb6fbb10ed48d1dac409e", "input": {"prompts":"` + x + ` | ` + x + `", "fps": "10", "num_steps": "6"}}`)
   bodyReader := bytes.NewReader(jsonBody)
   // Create a new request using http
@@ -183,7 +187,11 @@ func imgHandler(w http.ResponseWriter, r *http.Request) {
   url :=  "https://api.replicate.com/v1/predictions"
 
   // Create a Bearer string by appending string access token
+<<<<<<< HEAD
+  var bearer = "Token " + "2c941b819a31acdb92fcb6ccad363f54f12e8522"
+=======
   var bearer = "Token " + "7d0034559506166e11177d84e04e6813bd3261ac"
+>>>>>>> main
   jsonBody := []byte(`{"version": "8abccf52e7cba9f6e82317253f4a3549082e966db5584e92c808ece132037776", "input": {"prompt":"` + x + ` in a text-free, blue and chilly toned minimalist commercial."}}`)
   bodyReader := bytes.NewReader(jsonBody)
   // Create a new request using http

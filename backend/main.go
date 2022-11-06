@@ -350,7 +350,8 @@ func imgHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 func mainHandler(w http.ResponseWriter, r *http.Request) {
-	c := gogpt.NewClient("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")
+	dotenv := goDotEnvVariable("OPEN_AI_TOKEN")
+	c := gogpt.NewClient(dotenv)
 	ctx := context.Background()
 	var v map[string][]string
 

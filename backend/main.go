@@ -20,7 +20,7 @@ func main() {
 	http.HandleFunc("/", Middleware(mainHandler))
 	http.HandleFunc("/img", Middleware(imgHandler))
 	http.HandleFunc("/video", Middleware(videoHandler))
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(http.ListenAndServe(":9254", nil))
 }
 
 func goDotEnvVariable(key string) string {

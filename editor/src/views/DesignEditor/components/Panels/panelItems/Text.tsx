@@ -35,7 +35,7 @@ async function fetchWithTimeout(resource, options = {}) {
 }
 async function fetchImage(kw) {
   let x = JSON.stringify({Sentence: kw})
-  return await fetchWithTimeout(`http://localhost:8080/img?s=${kw}`, {
+  return await fetchWithTimeout(`http://localhost:9254/img?s=${kw}`, {
     mode: 'cors',
     cache: 'no-cache',
     credentials: 'include',
@@ -52,7 +52,7 @@ async function fetchText(kw, {setImgSet}) {
   queryClient.invalidateQueries(["image"])
   kw = {keywords: kw}
   let x = JSON.stringify(kw)
-  return await fetch(`http://localhost:8080/`, {
+  return await fetch(`http://localhost:9254/`, {
     method: 'POST',
   mode: 'cors',
   cache: 'no-cache',
